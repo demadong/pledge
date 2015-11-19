@@ -4,7 +4,9 @@ Promises Workshop: build the pledge.js deferral-style promise library
 // YOUR CODE HERE:
 
 var $Promise = function() {
+	this.handlerGroups = [];
 	this.state = 'pending';
+	this.thenCalls = 0;
 };
 
 var Deferral = function() {
@@ -15,6 +17,28 @@ var defer = function() {
 	return new Deferral();
 };
 
+$Promise.prototype.callHandlers = function() {
+	while(this.handlerGroups.length > this.thenCalls) {
+		if(this.state === 'resolved') {
+			this.handlerGroups[this.thenCalls].successCb(this.value);
+			this.thenCalls++;
+		} else {
+			break;
+		}
+	}
+	// body...
+};
+
+$Promise.prototype.then = function(successCb, errorCb) {
+	var success = false;
+	var error = false;
+	if(typeof successCb === 'function') success = successCb;
+	if(typeof errorCb === 'function') error = errorCb;
+	this.handlerGroups.push({successCb: success, errorCb: error});
+	// body...
+	this.callHandlers();
+};
+
 Deferral.prototype.resolve = function() {
 	if (this.$promise.state === 'pending') {
 		if (arguments.length > 0) {
@@ -22,6 +46,7 @@ Deferral.prototype.resolve = function() {
 		}
 		this.$promise.state = 'resolved';
 	};
+	this.$promise.callHandlers();
 };
 
 Deferral.prototype.reject = function() {
