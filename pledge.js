@@ -15,9 +15,23 @@ var defer = function() {
 	return new Deferral();
 };
 
+Deferral.prototype.resolve = function() {
+	if (this.$promise.state === 'pending') {
+		if (arguments.length > 0) {
+			this.$promise.value = arguments[0];
+		}
+		this.$promise.state = 'resolved';
+	};
+};
 
-
-
+Deferral.prototype.reject = function() {
+	if (this.$promise.state === 'pending') {
+		if (arguments.length > 0) {
+			this.$promise.value = arguments[0];
+		}
+		this.$promise.state = 'rejected';
+	};
+}
 
 
 /*-------------------------------------------------------
