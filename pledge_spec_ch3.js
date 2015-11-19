@@ -36,7 +36,7 @@ describe('Another promise', function(){
 
   describe('that is not yet rejected', function(){
 
-    xit('does not call error handlers yet', function(){
+    it('does not call error handlers yet', function(){
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops ).not.toHaveBeenCalled();
     });
@@ -56,22 +56,22 @@ describe('Another promise', function(){
     // those `handlerGroups`? There is going to have to be some
     // sort of "safety check" somewhere…
 
-    xit('does not call any success handlers', function(){
+    it('does not call any success handlers', function(){
       promiseForThing.then( fn.logOops );
       expect( fn.logOops ).not.toHaveBeenCalled();
     });
 
-    xit('calls an error handler added by .then', function(){
+    it('calls an error handler added by .then', function(){
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops ).toHaveBeenCalled();
     });
 
-    xit("calls an error handler by passing in the promise's value", function(){
+    it("calls an error handler by passing in the promise's value", function(){
       promiseForThing.then( null, fn.logInput );
       expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
-    xit('calls each error handler once per attachment', function(){
+    it('calls each error handler once per attachment', function(){
       promiseForThing.then( null, fn.logOops );
       promiseForThing.then( null, fn.logInput );
       promiseForThing.then( null, fn.logInput );
@@ -80,7 +80,7 @@ describe('Another promise', function(){
       expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
-    xit('calls each error handler in the order added', function(){
+    it('calls each error handler in the order added', function(){
       promiseForThing.then( null, fn.logOops );
       promiseForThing.then( null, fn.logInput );
       expect( log ).toEqual( [{ code: 'oops'}, {code: 'timed out'}] );
@@ -92,13 +92,13 @@ describe('Another promise', function(){
 
     var theReason = { code: 'unauthorized' };
 
-    xit('calls that handler when rejected', function(){
+    it('calls that handler when rejected', function(){
       promiseForThing.then( null, fn.logInput );
       thingDeferral.reject( theReason );
       expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
-    xit('calls all its error handlers in order one time when rejected', function(){
+    it('calls all its error handlers in order one time when rejected', function(){
       promiseForThing.then( null, fn.logInput );
       promiseForThing.then( null, fn.logOops );
       thingDeferral.reject( theReason );

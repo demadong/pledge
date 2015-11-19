@@ -20,7 +20,14 @@ var defer = function() {
 $Promise.prototype.callHandlers = function() {
 	while(this.handlerGroups.length > this.thenCalls) {
 		if(this.state === 'resolved') {
-			this.handlerGroups[this.thenCalls].successCb(this.value);
+			if(this.handlerGroups[this.thenCalls].successCb) {
+				this.handlerGroups[this.thenCalls].successCb(this.value);
+			}
+			this.thenCalls++;
+		} else if (this.state === 'rejected') {
+			if(this.handlerGroups[this.thenCalls].errorCb) {
+				this.handlerGroups[this.thenCalls].errorCb(this.value);
+			}
 			this.thenCalls++;
 		} else {
 			break;
@@ -56,6 +63,7 @@ Deferral.prototype.reject = function() {
 		}
 		this.$promise.state = 'rejected';
 	};
+	this.$promise.callHandlers();
 }
 
 
