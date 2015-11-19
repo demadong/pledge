@@ -20,7 +20,7 @@ used? By completing this chapter, you will learn the
 fundamentals of how promises act on eventual information.
 ========================================================*/
 
-describe("A promise's .then method", function(){
+xdescribe("A promise's .then method", function(){
 
   var deferral, promise;
   beforeEach(function(){
@@ -56,7 +56,7 @@ describe("A promise's .then method", function(){
 });
 
 // Getting to the main functionality
-describe('A promise', function(){
+xdescribe('A promise', function(){
 
   var fn, numDeferral, promiseForNum, foo;
   fn = {

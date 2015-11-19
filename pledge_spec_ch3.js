@@ -19,7 +19,7 @@ a major part of promises working. Rejection is similar;
 finish the "callback aggregation" of promises in this chapter.
 ========================================================*/
 
-describe('Another promise', function(){
+xdescribe('Another promise', function(){
 
   var fn, thingDeferral, promiseForThing, log;
   fn = {
@@ -128,18 +128,18 @@ describe('Another promise', function(){
     });
 
     // Demonstration — the next two specs should pass already
-    xit('can do stuff with resolved data', function(){
+    it('can do stuff with resolved data', function(){
       thingDeferral.resolve({ animal: 'duckling' });
       expect( ui.animals[2] ).toBe( 'duckling' );
     });
 
-    xit('can deal with rejection reasons', function(){
+    it('can deal with rejection reasons', function(){
       thingDeferral.reject({ message: 'unauthorized' });
       expect( ui.warning ).toBe( 'unauthorized' );
     });
 
     // Optional but recommended garbage collection
-    xit('discards handlers that are no longer needed', function(){
+    it('discards handlers that are no longer needed', function(){
       thingDeferral.resolve({ animal: 'chipmunk' });
       expect( promiseForThing.handlerGroups ).toEqual( [] );
     });
@@ -151,7 +151,7 @@ describe('Another promise', function(){
 // A quick detour while we are finishing rejections:
 // add a .catch(fn) convenience method to your promise prototype.
 // The internals of this method can be coded as one short line.
-describe("A promise's .catch(errorFn) method", function(){
+xdescribe("A promise's .catch(errorFn) method", function(){
 
   var deferral, promise;
   beforeEach(function(){
@@ -161,7 +161,7 @@ describe("A promise's .catch(errorFn) method", function(){
   });
   function myFunc (reason) { console.log(reason); }
 
-  xit('attaches errorFn as an error handler', function(){
+  it('attaches errorFn as an error handler', function(){
     promise.catch( myFunc );
     expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
@@ -170,7 +170,7 @@ describe("A promise's .catch(errorFn) method", function(){
   by default all functions return undefined. However, as you start
   Ch. 4, this may fail. If that happens, you will have to return here
   and fix .catch — this time, taking the Ch. 4 specs into account. */
-  xit('returns the same kind of thing that .then would', function(){
+  it('returns the same kind of thing that .then would', function(){
     var return1 = promise.catch( myFunc );
     var return2 = promise.then( null, myFunc );
     expect( return1 ).toEqual( return2 );

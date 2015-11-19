@@ -18,17 +18,38 @@ var defer = function() {
 };
 
 $Promise.prototype.callHandlers = function() {
-	while(this.handlerGroups.length > this.thenCalls) {
+	while(this.handlerGroups.length > 0) {
 		if(this.state === 'resolved') {
-			if(this.handlerGroups[this.thenCalls].successCb) {
-				this.handlerGroups[this.thenCalls].successCb(this.value);
+			this.handlerGroups[0].forwarder.$promise.state = this.state;
+			if(this.handlerGroups[0].successCb) {
+				try {
+					var result = this.handlerGroups[0].successCb(this.value);
+					if (result instanceof $Promise) {
+						console.log('hi');
+						this.handlerGroups[0].successCb(this.value).resolve()
+						this.handlerGroups[0].forwarder.resolve() = ;
+					} else {
+						console.log('bye');
+						this.handlerGroups[0].forwarder.resolve(result);
+					}
+				} catch(e) {
+					this.handlerGroups[0].forwarder.reject(e)
+				}
+			} else {
+				this.handlerGroups[0].forwarder.resolve(this.value);
 			}
-			this.thenCalls++;
+			this.handlerGroups.shift();
 		} else if (this.state === 'rejected') {
-			if(this.handlerGroups[this.thenCalls].errorCb) {
-				this.handlerGroups[this.thenCalls].errorCb(this.value);
+			if(this.handlerGroups[0].errorCb) {
+				try {
+					this.handlerGroups[0].forwarder.resolve(this.handlerGroups[0].errorCb(this.value))
+				} catch(e) {
+					this.handlerGroups[0].forwarder.reject(e)
+				}
+			} else {
+				this.handlerGroups[0].forwarder.resolve(this.value);
 			}
-			this.thenCalls++;
+			this.handlerGroups.shift();
 		} else {
 			break;
 		}
@@ -41,9 +62,18 @@ $Promise.prototype.then = function(successCb, errorCb) {
 	var error = false;
 	if(typeof successCb === 'function') success = successCb;
 	if(typeof errorCb === 'function') error = errorCb;
-	this.handlerGroups.push({successCb: success, errorCb: error});
-	// body...
+	var theDeferral = defer();
+	this.handlerGroups.push({
+		successCb: success,
+		errorCb: error,
+		forwarder: theDeferral
+	});
 	this.callHandlers();
+	return theDeferral.$promise;
+};
+
+$Promise.prototype.catch = function(errorCb) {
+	return this.then(null, errorCb);
 };
 
 Deferral.prototype.resolve = function() {
@@ -53,7 +83,7 @@ Deferral.prototype.resolve = function() {
 		}
 		this.$promise.state = 'resolved';
 	};
-	this.$promise.callHandlers();
+	this.$promise.then();
 };
 
 Deferral.prototype.reject = function() {
@@ -63,7 +93,7 @@ Deferral.prototype.reject = function() {
 		}
 		this.$promise.state = 'rejected';
 	};
-	this.$promise.callHandlers();
+	this.$promise.then();
 }
 
 
